@@ -1,3 +1,4 @@
+library(survival)
 library(lubridate)
 regjering <- read.csv("regjering.csv",
                       colClasses=c("character",
