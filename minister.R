@@ -7,6 +7,7 @@ regjering <- read.csv("regjering.csv",
                                    "integer",
                                    "factor"))
 regjering[is.na(regjering)] <- today()
-regjering$Dager <- as.numeric(regjering$Sluttdato - regjering$Startdato)
-regjering.fit  <- survfit(with(regjering, Surv(Dager, Avskjed)) ~ 1)
+regjering$År <- decimal_date(regjering$Sluttdato) - 
+    decimal_date(regjering$Startdato)
+regjering.fit  <- survfit(with(regjering, Surv(År, Avskjed)) ~ 1)
 plot(regjering.fit)
