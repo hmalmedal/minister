@@ -17,7 +17,11 @@ shinyUI(
             selectInput(inputId = "valgtregjering",
                         label = "Velg regjering",
                         choices = regjeringsliste,
-                        selected = "Alle regjeringer")
+                        selected = "Alle regjeringer"),
+            radioButtons(inputId = "dager_år",
+                         label = "",
+                         choices = c("Dager", "År"),
+                         selected = "Dager")
         ),
 
         mainPanel(
