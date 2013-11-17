@@ -30,10 +30,12 @@ shinyServer(function(input, output) {
         } else {
             data <- regjering[i, ]
         }
-        if (input$dager_år == "Dager") {
-            plot(survfit(Surv(Dager, Avskjed) ~ 1, data = data))
-        } else {
-            plot(survfit(Surv(År, Avskjed) ~ 1, data = data))
-        }
+        formel  <- as.formula(paste("Surv(",
+                                    input$dager_år,
+                                    ", Avskjed) ~ 1",
+                                    sep = ""))
+        plot(survfit(formel, data = data),
+             xlab = input$dager_år,
+             main = input$valgtregjering)
     })
 })
