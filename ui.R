@@ -21,7 +21,10 @@ shinyUI(
             radioButtons(inputId = "dager_år",
                          label = "",
                          choices = c("Dager", "År"),
-                         selected = "Dager")
+                         selected = "Dager"),
+            checkboxInput(inputId = "merker",
+                          label = "Merker",
+                          value = T)
         ),
 
         mainPanel(

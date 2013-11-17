@@ -35,6 +35,7 @@ shinyServer(function(input, output) {
                                     ", Avskjed) ~ 1",
                                     sep = ""))
         plot(survfit(formel, data = data),
+             mark.time = input$merker,
              xlab = input$dager_år,
              main = input$valgtregjering)
     })
