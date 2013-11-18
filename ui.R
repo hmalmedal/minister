@@ -28,8 +28,10 @@ shinyUI(
         ),
 
         mainPanel(
-            plotOutput("plot"),
-            dataTableOutput("tabell")
+            tabsetPanel(
+                tabPanel("Plott", plotOutput("plot")),
+                tabPanel("Tabell", dataTableOutput("tabell"))
+            )
         )
     )
 )
