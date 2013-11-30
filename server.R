@@ -30,10 +30,9 @@ shinyServer(function(input, output) {
         } else {
             data <- regjering[i, ]
         }
-        formel  <- as.formula(paste("Surv(",
-                                    input$dager_år,
-                                    ", Avskjed) ~ 1",
-                                    sep = ""))
+        formel  <- as.formula(paste0("Surv(",
+                                     input$dager_år,
+                                     ", Avskjed) ~ 1"))
         plot(survfit(formel, data = data),
              mark.time = input$merker,
              xlab = input$dager_år,
@@ -42,10 +41,9 @@ shinyServer(function(input, output) {
     output$plot2<- renderPlot({
         i <- which(regjering$Regjering %in% input$valgteregjeringer)
         n <- length(input$valgteregjeringer)
-        formel  <- as.formula(paste("Surv(",
-                                    input$dager_år,
-                                    ", Avskjed) ~ Regjering",
-                                    sep = ""))
+        formel  <- as.formula(paste0("Surv(",
+                                     input$dager_år,
+                                     ", Avskjed) ~ Regjering"))
         data <- regjering[i, ]
         plot(survfit(formel, data = data),
              col = 1:n,
