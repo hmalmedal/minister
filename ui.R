@@ -37,7 +37,12 @@ shinyUI(
                          selected = "Dager"),
             checkboxInput(inputId = "merker",
                           label = "Merker",
-                          value = T)
+                          value = T),
+            sliderInput(inputId = "zoom",
+                        label = "Zoom",
+                        min = 1,
+                        max = 100,
+                        value = 100)
         ),
 
         mainPanel(

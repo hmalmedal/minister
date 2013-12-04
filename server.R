@@ -30,13 +30,15 @@ shinyServer(function(input, output) {
         } else {
             data <- regjering[i, ]
         }
+        makstid <- max(data[, input$dager_år]) * input$zoom / 100
         formel  <- as.formula(paste0("Surv(",
                                      input$dager_år,
                                      ", Avskjed) ~ 1"))
         plot(survfit(formel, data = data),
              mark.time = input$merker,
              xlab = input$dager_år,
-             main = input$valgtregjering)
+             main = input$valgtregjering,
+             xmax = makstid)
     })
     output$plot2<- renderPlot({
         i <- which(regjering$Regjering %in% input$valgteregjeringer)
@@ -45,12 +47,14 @@ shinyServer(function(input, output) {
                                      input$dager_år,
                                      ", Avskjed) ~ Regjering"))
         data <- regjering[i, ]
+        makstid <- max(data[, input$dager_år]) * input$zoom / 100
         plot(survfit(formel, data = data),
              col = 1:n,
              conf.int = F,
              mark.time = input$merker,
              xlab = input$dager_år,
-             main = paste(sort(input$valgteregjeringer), collapse = ", "))
+             main = paste(sort(input$valgteregjeringer), collapse = ", "),
+             xmax = makstid)
         legend("bottomleft", legend = sort(input$valgteregjeringer),
                col = 1:n, lty=1, bty = "n")
     })
