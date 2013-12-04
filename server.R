@@ -14,7 +14,7 @@ regjering$År <- decimal_date(regjering$Sluttdato) -
     decimal_date(regjering$Startdato)
 
 shinyServer(function(input, output) {
-    output$tabell <- renderDataTable({
+    data1 <- reactive({
         i <- which(regjering$Regjering == input$valgtregjering)
         if (length(i) == 0) {
             data <- regjering
@@ -23,14 +23,12 @@ shinyServer(function(input, output) {
         }
         return(data)
     })
+    output$tabell <- renderDataTable({
+        data1()
+    })
     output$plot <- renderPlot({
-        i <- which(regjering$Regjering == input$valgtregjering)
-        if (length(i) == 0) {
-            data <- regjering
-        } else {
-            data <- regjering[i, ]
-        }
-        makstid <- max(data[, input$dager_år]) * input$zoom / 100
+        data <- data1()
+        makstid <- input$zoom
         formel  <- as.formula(paste0("Surv(",
                                      input$dager_år,
                                      ", Avskjed) ~ 1"))
@@ -40,14 +38,18 @@ shinyServer(function(input, output) {
              main = input$valgtregjering,
              xmax = makstid)
     })
-    output$plot2<- renderPlot({
+    data2 <- reactive({
         i <- which(regjering$Regjering %in% input$valgteregjeringer)
+        data <- regjering[i, ]
+        return(data)
+    })
+    output$plot2<- renderPlot({
         n <- length(input$valgteregjeringer)
         formel  <- as.formula(paste0("Surv(",
                                      input$dager_år,
                                      ", Avskjed) ~ Regjering"))
-        data <- regjering[i, ]
-        makstid <- max(data[, input$dager_år]) * input$zoom / 100
+        data <- data2()
+        makstid <- input$zoom
         plot(survfit(formel, data = data),
              col = 1:n,
              conf.int = F,
@@ -57,5 +59,19 @@ shinyServer(function(input, output) {
              xmax = makstid)
         legend("bottomleft", legend = sort(input$valgteregjeringer),
                col = 1:n, lty=1, bty = "n")
+    })
+    output$zoom <- renderUI({
+        if (input$sammenlign) {
+            data <- data2()
+        } else {
+            data <- data1()
+        }
+        makstid  <- max(data[, input$dager_år])
+        sliderInput(inputId = "zoom",
+                    label = "Zoom",
+                    min = 0,
+                    max = makstid,
+                    value = makstid,
+                    locale = "se")
     })
 })
