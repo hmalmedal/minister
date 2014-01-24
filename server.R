@@ -3,11 +3,11 @@ library(shiny)
 library(survival)
 library(lubridate)
 regjering <- read.csv("regjering.csv",
-                      colClasses=c("character",
-                                   "Date",
-                                   "Date",
-                                   "integer",
-                                   "factor"))
+                      colClasses = c("character",
+                                     "Date",
+                                     "Date",
+                                     "integer",
+                                     "factor"))
 regjering[is.na(regjering)] <- today()
 regjering$Dager <- as.numeric(regjering$Sluttdato - regjering$Startdato)
 regjering$År <- decimal_date(regjering$Sluttdato) -
@@ -43,7 +43,7 @@ shinyServer(function(input, output) {
         data <- regjering[i, ]
         return(data)
     })
-    output$plot2<- renderPlot({
+    output$plot2 <- renderPlot({
         n <- length(input$valgteregjeringer)
         formel  <- as.formula(paste0("Surv(",
                                      input$dager_år,
@@ -58,7 +58,7 @@ shinyServer(function(input, output) {
              main = paste(sort(input$valgteregjeringer), collapse = ", "),
              xmax = makstid)
         legend("bottomleft", legend = sort(input$valgteregjeringer),
-               col = 1:n, lty=1, bty = "n")
+               col = 1:n, lty = 1, bty = "n")
     })
     output$zoom <- renderUI({
         if (input$sammenlign) {

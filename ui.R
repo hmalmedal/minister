@@ -1,8 +1,8 @@
 library(shiny)
 
 regjeringsliste <- read.csv("regjering.csv",
-                            colClasses=c(rep("NULL", 4),
-                                         "character"))
+                            colClasses = c(rep("NULL", 4),
+                                           "character"))
 regjeringsliste <- unique(regjeringsliste)
 regjeringsliste <- regjeringsliste[, 1]
 kunregjeringer <- regjeringsliste
