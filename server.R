@@ -8,7 +8,7 @@ regjering <- read.csv("regjering.csv",
                                      "Date",
                                      "integer",
                                      "factor"))
-regjering[is.na(regjering)] <- today()
+regjering[is.na(regjering)] <- today("Europe/Oslo")
 regjering$Dager <- as.numeric(regjering$Sluttdato - regjering$Startdato)
 regjering$År <- decimal_date(regjering$Sluttdato) -
   decimal_date(regjering$Startdato)
