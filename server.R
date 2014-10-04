@@ -52,7 +52,7 @@ shinyServer(function(input, output) {
     makstid <- input$zoom
     plot(survfit(formel, data = data),
          col = 1:n,
-         conf.int = F,
+         conf.int = FALSE,
          mark.time = input$merker,
          xlab = input$dager_år,
          main = paste(sort(input$valgteregjeringer), collapse = ", "),

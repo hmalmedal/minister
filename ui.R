@@ -17,7 +17,7 @@ shinyUI(
     sidebarPanel(
       checkboxInput(inputId = "sammenlign",
                     label = "Sammenlign",
-                    value = F),
+                    value = FALSE),
       conditionalPanel(condition = "input.sammenlign == false",
                        selectInput(inputId = "valgtregjering",
                                    label = "Velg regjering",
@@ -29,7 +29,7 @@ shinyUI(
                                    label = "Velg regjeringer",
                                    choices = kunregjeringer,
                                    selected = kunregjeringer[1],
-                                   multiple = T)
+                                   multiple = TRUE)
       ),
       radioButtons(inputId = "dager_år",
                    label = "",
@@ -37,7 +37,7 @@ shinyUI(
                    selected = "Dager"),
       checkboxInput(inputId = "merker",
                     label = "Merker",
-                    value = T),
+                    value = TRUE),
       uiOutput("zoom")
     ),
 
