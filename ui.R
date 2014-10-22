@@ -1,12 +1,12 @@
 library(shiny)
+library(dplyr)
 
-regjeringsliste <- read.csv("regjering.csv",
-                            colClasses = c(rep("NULL", 4),
-                                           "character"))
-regjeringsliste <- unique(regjeringsliste)
-regjeringsliste <- regjeringsliste[, 1]
-kunregjeringer <- regjeringsliste
-regjeringsliste <- c("Alle regjeringer", regjeringsliste)
+regjeringsliste <- read.csv("regjering.csv", stringsAsFactors = FALSE) %>%
+  select(Regjering) %>%
+  distinct %>%
+  getElement(1) %>%
+  c("Alle regjeringer", .)
+kunregjeringer <- regjeringsliste[-1]
 
 shinyUI(
 

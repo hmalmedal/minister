@@ -1,17 +1,14 @@
 library(shiny)
+library(dplyr)
 
 library(survival)
 library(lubridate)
-regjering <- read.csv("regjering.csv",
-                      colClasses = c("character",
-                                     "Date",
-                                     "Date",
-                                     "integer",
-                                     "factor"))
-regjering[is.na(regjering)] <- today("Europe/Oslo")
-regjering$Dager <- as.numeric(regjering$Sluttdato - regjering$Startdato)
-regjering$År <- decimal_date(regjering$Sluttdato) -
-  decimal_date(regjering$Startdato)
+regjering <- read.csv("regjering.csv", stringsAsFactors = FALSE) %>%
+  tbl_df %>%
+  mutate_each(funs(as.Date), ends_with("dato")) %>%
+  mutate(Sluttdato = replace(Sluttdato, is.na(Sluttdato), today("Europe/Oslo")),
+         Dager = as.numeric(Sluttdato - Startdato),
+         År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
 shinyServer(function(input, output) {
   data1 <- reactive({
