@@ -1,9 +1,10 @@
 library(shiny)
 library(dplyr)
+library(readr)
 
-regjeringsliste <- read.csv("regjering.csv", stringsAsFactors = FALSE) %>%
+regjeringsliste <- read_csv("regjering.csv") %>%
   select(Regjering) %>%
-  distinct %>%
+  distinct() %>%
   getElement(1) %>%
   c("Alle regjeringer", .)
 kunregjeringer <- regjeringsliste[-1]

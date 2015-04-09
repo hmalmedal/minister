@@ -1,11 +1,10 @@
 library(shiny)
 library(dplyr)
+library(readr)
 
 library(survival)
 library(lubridate)
-regjering <- read.csv("regjering.csv", stringsAsFactors = FALSE) %>%
-  tbl_df %>%
-  mutate_each(funs(as.Date), ends_with("dato")) %>%
+regjering <- read_csv("regjering.csv") %>%
   mutate(Sluttdato = replace(Sluttdato, is.na(Sluttdato), today("Europe/Oslo")),
          Dager = as.numeric(Sluttdato - Startdato),
          År = decimal_date(Sluttdato) - decimal_date(Startdato))
