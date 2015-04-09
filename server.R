@@ -68,6 +68,6 @@ shinyServer(function(input, output) {
                 min = 0,
                 max = makstid,
                 value = makstid,
-                locale = "se")
+                sep = " ")
   })
 })
