@@ -19,7 +19,7 @@ shinyServer(function(input, output) {
     }
     return(data)
   })
-  output$tabell <- renderDataTable({
+  output$tabell <- DT::renderDataTable({
     data1()
   })
   output$plot <- renderPlot({

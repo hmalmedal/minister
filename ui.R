@@ -46,7 +46,7 @@ shinyUI(
       conditionalPanel(condition = "input.sammenlign == false",
                        tabsetPanel(
                          tabPanel("Plott", plotOutput("plot")),
-                         tabPanel("Tabell", dataTableOutput("tabell"))
+                         tabPanel("Tabell", DT::dataTableOutput("tabell"))
                        )
       ),
       conditionalPanel(condition = "input.sammenlign == true",
