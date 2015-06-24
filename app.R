@@ -47,7 +47,8 @@ server <- function(input, output) {
     layer_ribbons(y = ~conf.high, y2 = ~conf.low, opacity := 0.2,
                   fill = ~Regjering) %>%
     layer_lines(y = ~estimate, stroke = ~Regjering) %>%
-    scale_numeric("y", domain = c(0, 1)) %>%
+    scale_numeric("x", label = "År") %>%
+    scale_numeric("y", domain = c(0, 1), label = "Rate") %>%
     bind_shiny("r")
 }
 
