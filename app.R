@@ -15,8 +15,6 @@ library(tidyr)
 library(ggvis)
 
 server <- function(input, output) {
-  input_opacity <- reactive(input$opacity)
-
   regjeringsdata <- reactive({
     i <- which(regjering$Regjering %in% input$valgteregjeringer)
     if (length(i) == 0) {
@@ -46,7 +44,7 @@ server <- function(input, output) {
   regjering_survfit %>%
     group_by(Regjering) %>%
     ggvis(x = ~time, interpolate := "step-after") %>%
-    layer_ribbons(y = ~conf.high, y2 = ~conf.low, opacity := input_opacity,
+    layer_ribbons(y = ~conf.high, y2 = ~conf.low, opacity := 0.2,
                   fill = ~Regjering) %>%
     layer_lines(y = ~estimate, stroke = ~Regjering) %>%
     scale_numeric("y", domain = c(0, 1)) %>%
@@ -60,9 +58,7 @@ ui <- fluidPage(
       selectInput(inputId = "valgteregjeringer",
                   label = "Velg regjeringer",
                   choices = regjeringer,
-                  multiple = TRUE),
-      sliderInput("opacity", "Opasitet:",
-                  min = 0, max = 1, value = 0.2)
+                  multiple = TRUE)
     ),
     mainPanel(
       ggvisOutput("r")
