@@ -4,7 +4,6 @@ library(lubridate)
 
 regjering <- read_csv("regjering.csv") %>%
   mutate(Sluttdato = replace(Sluttdato, is.na(Sluttdato), today("Europe/Oslo")),
-         Dager = as.numeric(Sluttdato - Startdato),
          År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
 regjeringer <- unique(regjering$Regjering)
