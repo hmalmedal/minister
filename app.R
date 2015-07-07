@@ -58,7 +58,8 @@ ui <- fluidPage(
       selectInput(inputId = "valgteregjeringer",
                   label = "Velg regjeringer",
                   choices = regjeringer,
-                  multiple = TRUE)
+                  multiple = TRUE),
+      a(href = "https://github.com/hmalmedal/minister", "GitHub")
     ),
     mainPanel(
       ggvisOutput("r")
