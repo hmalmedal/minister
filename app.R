@@ -30,7 +30,7 @@ server <- function(input, output) {
     s <- survfit(Surv(År, Avskjed) ~ Regjering, data = regjeringsdata()) %>%
       tidy()
 
-    if (is.null(s$strata))
+    if (!"strata" %in% names(s))
       s$strata <- paste0("Regjering=", r)
 
     s %>% group_by(strata) %>%
