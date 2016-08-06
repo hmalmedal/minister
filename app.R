@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 library(lubridate)
 
-regjering <- read_csv("regjering.csv") %>%
+regjering <- read_csv("regjering.csv", col_types = "cDDic") %>%
   mutate(Sluttdato = replace(Sluttdato, is.na(Sluttdato), today("Europe/Oslo")),
          År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
