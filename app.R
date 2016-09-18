@@ -1,16 +1,16 @@
 library(readr)
 library(dplyr)
 library(lubridate)
+library(tidyr)
 
 regjering <- read_csv("regjering.csv", col_types = "cDDic") %>%
-  mutate(Sluttdato = replace(Sluttdato, is.na(Sluttdato), today("Europe/Oslo")),
-         År = decimal_date(Sluttdato) - decimal_date(Startdato))
+  replace_na(list(Sluttdato = today("Europe/Oslo"))) %>%
+  mutate(År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
 regjeringer <- unique(regjering$Regjering)
 
 library(survival)
 library(broom)
-library(tidyr)
 library(ggvis)
 
 server <- function(input, output) {
