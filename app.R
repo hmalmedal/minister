@@ -1,9 +1,7 @@
-library(readr)
-library(dplyr)
+library(tidyverse)
 library(lubridate)
-library(tidyr)
 
-regjering <- read_csv("regjering.csv", col_types = "cDDic") %>%
+regjering <- read_csv("regjering.csv") %>%
   replace_na(list(Sluttdato = today("Europe/Oslo"))) %>%
   mutate(År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
