@@ -1,5 +1,10 @@
 library(tidyverse)
 library(lubridate)
+library(survival)
+library(broom)
+library(plotly)
+library(shiny)
+library(bslib)
 
 regjering <- read_csv("regjering.csv") %>%
   replace_na(list(Sluttdato = today("Europe/Oslo"))) %>%
@@ -7,11 +12,8 @@ regjering <- read_csv("regjering.csv") %>%
 
 regjeringer <- unique(regjering$Regjering)
 
-library(survival)
-library(broom)
-library(ggvis)
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   regjeringsdata <- reactive({
     i <- which(regjering$Regjering %in% input$valgteregjeringer)
     if (length(i) == 0) {
@@ -38,30 +40,47 @@ server <- function(input, output) {
       separate(strata, c("key", "Regjering"), "=")
   })
 
-  regjering_survfit %>%
-    group_by(Regjering) %>%
-    ggvis(x = ~time, interpolate := "step-after") %>%
-    layer_ribbons(y = ~conf.high, y2 = ~conf.low, opacity := 0.2,
-                  fill = ~Regjering) %>%
-    layer_lines(y = ~estimate, stroke = ~Regjering) %>%
-    scale_numeric("x", label = "År") %>%
-    scale_numeric("y", domain = c(0, 1), label = "Rate") %>%
-    bind_shiny("r")
+  output$p <- renderPlotly({
+    d <- regjering_survfit()
+    plt <- plot_ly()
+    for (g in unique(d$Regjering)) {
+      dg <- d %>% filter(Regjering == g)
+      plt <- plt %>%
+        add_lines(
+          data = dg,
+          x = ~time, y = ~estimate,
+          name = g, legendgroup = g,
+          line = list(shape = "hv"),
+          hovertemplate = paste0(
+            "<b>", g, "</b><br>",
+            "År: %{x:.2f}<br>",
+            "Rate: %{y:.3f}<extra></extra>"
+          )
+        )
+    }
+    plt %>%
+      layout(
+        xaxis = list(title = "År", zeroline = FALSE),
+        yaxis = list(title = "Rate", range = c(0, 1), tickformat = ".0%"),
+        legend = list(orientation = "v"),
+        margin = list(l = 60, r = 20, b = 50, t = 40)
+      )
+  })
 }
 
-ui <- fluidPage(
+
+ui <- page_fluid(
+  theme = bs_theme(version = 5, bootswatch = "flatly"),
   titlePanel("Tid i regjering"),
-  sidebarLayout(
-    sidebarPanel(
+  layout_sidebar(
+    sidebar = sidebar(
       selectInput(inputId = "valgteregjeringer",
                   label = "Velg regjeringer",
                   choices = regjeringer,
                   multiple = TRUE),
       a(href = "https://github.com/hmalmedal/minister", "GitHub")
     ),
-    mainPanel(
-      ggvisOutput("r")
-    )
+    plotlyOutput("p", height = 520)
   )
 )
 
