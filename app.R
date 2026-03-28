@@ -2,7 +2,6 @@ library(tidyverse)
 library(lubridate)
 library(survival)
 library(broom)
-library(plotly)
 library(shiny)
 library(bslib)
 
@@ -11,7 +10,6 @@ regjering <- read_csv("regjering.csv") %>%
   mutate(År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
 regjeringer <- unique(regjering$Regjering)
-
 
 server <- function(input, output, session) {
   regjeringsdata <- reactive({
@@ -30,57 +28,53 @@ server <- function(input, output, session) {
     s <- survfit(Surv(År, Avskjed) ~ Regjering, data = regjeringsdata()) %>%
       tidy()
 
-    if (!"strata" %in% names(s))
+    if (!"strata" %in% names(s)) {
       s$strata <- paste0("Regjering=", r)
+    }
 
-    s %>% group_by(strata) %>%
-      bind_rows(summarise(., time = 0, estimate = 1,
-                          conf.high = 1, conf.low = 1)) %>%
+    s %>%
+      group_by(strata) %>%
+      bind_rows(
+        summarise(
+          .,
+          time = 0,
+          estimate = 1,
+          conf.high = 1,
+          conf.low = 1
+        )
+      ) %>%
       arrange(strata, time) %>%
       separate(strata, c("key", "Regjering"), "=")
   })
 
-  output$p <- renderPlotly({
+  output$p <- renderPlot({
     d <- regjering_survfit()
-    plt <- plot_ly()
-    for (g in unique(d$Regjering)) {
-      dg <- d %>% filter(Regjering == g)
-      plt <- plt %>%
-        add_lines(
-          data = dg,
-          x = ~time, y = ~estimate,
-          name = g, legendgroup = g,
-          line = list(shape = "hv"),
-          hovertemplate = paste0(
-            "<b>", g, "</b><br>",
-            "År: %{x:.2f}<br>",
-            "Rate: %{y:.3f}<extra></extra>"
-          )
-        )
-    }
-    plt %>%
-      layout(
-        xaxis = list(title = "År", zeroline = FALSE),
-        yaxis = list(title = "Rate", range = c(0, 1), tickformat = ".0%"),
-        legend = list(orientation = "v"),
-        margin = list(l = 60, r = 20, b = 50, t = 40)
-      )
+
+    ggplot(d, aes(x = time, y = estimate, color = Regjering)) +
+      geom_step() +
+      scale_y_continuous(
+        name = "Rate",
+        limits = c(0, 1),
+        labels = scales::label_percent()
+      ) +
+      labs(x = "År")
   })
 }
-
 
 ui <- page_fluid(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   titlePanel("Tid i regjering"),
   layout_sidebar(
     sidebar = sidebar(
-      selectInput(inputId = "valgteregjeringer",
-                  label = "Velg regjeringer",
-                  choices = regjeringer,
-                  multiple = TRUE),
+      selectInput(
+        inputId = "valgteregjeringer",
+        label = "Velg regjeringer",
+        choices = regjeringer,
+        multiple = TRUE
+      ),
       a(href = "https://github.com/hmalmedal/minister", "GitHub")
     ),
-    plotlyOutput("p", height = 520)
+    plotOutput("p", height = 520)
   )
 )
 
