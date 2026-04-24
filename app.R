@@ -5,8 +5,8 @@ library(broom)
 library(shiny)
 library(bslib)
 
-regjering <- read_csv("regjering.csv") %>%
-  replace_na(list(Sluttdato = today("Europe/Oslo"))) %>%
+regjering <- read_csv("regjering.csv") |>
+  replace_na(list(Sluttdato = today("Europe/Oslo"))) |>
   mutate(År = decimal_date(Sluttdato) - decimal_date(Startdato))
 
 regjeringer <- unique(regjering$Regjering)
@@ -25,25 +25,26 @@ server <- function(input, output, session) {
   regjering_survfit <- reactive({
     r <- regjeringsdata()$Regjering[1]
 
-    s <- survfit(Surv(År, Avskjed) ~ Regjering, data = regjeringsdata()) %>%
+    s <- survfit(Surv(År, Avskjed) ~ Regjering, data = regjeringsdata()) |>
       tidy()
 
     if (!"strata" %in% names(s)) {
       s$strata <- paste0("Regjering=", r)
     }
 
-    s %>%
-      group_by(strata) %>%
-      bind_rows(
+    s |>
+      group_by(strata) |>
+      (\(x) bind_rows(
+        x,
         summarise(
-          .,
+          x,
           time = 0,
           estimate = 1,
           conf.high = 1,
           conf.low = 1
         )
-      ) %>%
-      arrange(strata, time) %>%
+      ))() |>
+      arrange(strata, time) |>
       separate(strata, c("key", "Regjering"), "=")
   })
 
