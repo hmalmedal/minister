@@ -1,7 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(survival)
-library(broom)
+library(ggsurvfit)
 library(shiny)
 library(bslib)
 
@@ -23,42 +23,21 @@ server <- function(input, output, session) {
   })
 
   regjering_survfit <- reactive({
-    r <- regjeringsdata()$Regjering[1]
-
-    s <- survfit(Surv(År, Avskjed) ~ Regjering, data = regjeringsdata()) |>
-      tidy()
-
-    if (!"strata" %in% names(s)) {
-      s$strata <- paste0("Regjering=", r)
-    }
-
-    s |>
-      group_by(strata) |>
-      (\(x) bind_rows(
-        x,
-        summarise(
-          x,
-          time = 0,
-          estimate = 1,
-          conf.high = 1,
-          conf.low = 1
-        )
-      ))() |>
-      arrange(strata, time) |>
-      separate(strata, c("key", "Regjering"), "=")
+    survfit2(
+      Surv(År, Avskjed) ~ Regjering,
+      data = regjeringsdata(),
+      time0 = TRUE
+    )
   })
 
   output$p <- renderPlot({
-    d <- regjering_survfit()
-
-    ggplot(d, aes(x = time, y = estimate, color = Regjering)) +
-      geom_step() +
-      scale_y_continuous(
-        name = "Rate",
-        limits = c(0, 1),
-        labels = scales::label_percent()
-      ) +
-      labs(x = "År")
+    regjering_survfit() |>
+      ggsurvfit() +
+      scale_ggsurvfit() +
+      labs(
+        x = "År som statsråd",
+        y = "Estimert andel uten avskjed"
+      )
   })
 }
 
